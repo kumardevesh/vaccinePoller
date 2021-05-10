@@ -14,7 +14,6 @@ class SplashActivity : AppCompatActivity() {
         bt_continue.setOnClickListener {
             if (et_area_code.text.isNullOrEmpty().not() && et_auth_token.text.isNullOrEmpty()) {
                 updateSharePref()
-                MainActivity.areaCode = et_area_code.text.toString().toInt()
                 RequestInterceptor.myAuthToken = et_auth_token.text.toString()
                 startMainActivity()
 

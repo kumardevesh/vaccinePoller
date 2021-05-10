@@ -17,13 +17,16 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
 
-    companion object{
-         var areaCode = 265
+    //banglore urban = 265 , banglore rural 276 , bbmp 294
+    companion object {
+        var areaCodeList = ArrayList(listOf(265, 276, 294))
     }
+
     private var apiInterface: APIInterface? = null
 
 
@@ -55,32 +58,36 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initiateCall(dateString: String) {
-        val call: Call<CentersResponse>? = apiInterface?.getCenters(
-                areaCode, dateString,
-                "COVISHIELD"
-        )
-        call?.enqueue(object : Callback<CentersResponse?> {
-            override fun onFailure(call: Call<CentersResponse?>?, t: Throwable?) {
 
-            }
+        for (areaCode in areaCodeList) {
+            val call: Call<CentersResponse>? = apiInterface?.getCenters(
+                    areaCode, dateString,
+                    "COVISHIELD"
+            )
+            call?.enqueue(object : Callback<CentersResponse?> {
+                override fun onFailure(call: Call<CentersResponse?>?, t: Throwable?) {
 
-            override fun onResponse(
-                    call: Call<CentersResponse?>?,
-                    response: Response<CentersResponse?>?
-            ) {
-                val centers = response?.body()?.centers
-                centers?.let {
-                    for (center: Center in centers) {
-                        for (session: Session in center.sessions) {
-                            if (session.capacity > 0) {
-                                showNotification()
+                }
+
+                override fun onResponse(
+                        call: Call<CentersResponse?>?,
+                        response: Response<CentersResponse?>?
+                ) {
+                    val centers = response?.body()?.centers
+                    centers?.let {
+                        for (center: Center in centers) {
+                            for (session: Session in center.sessions) {
+                                if (session.capacity > 0 &&
+                                        session.slots.isNullOrEmpty().not() &&
+                                        session.minAge == 18) {
+                                    showNotification(center, areaCode)
+                                }
                             }
                         }
                     }
                 }
-            }
-
-        })
+            })
+        }
     }
 
     private fun createNotificationChannel() {
@@ -100,14 +107,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showNotification() {
+    fun showNotification(center: Center, areaCode: Int) {
         var builder = NotificationCompat.Builder(this, "COVISHIELD")
                 .setSmallIcon(R.drawable.ic_launcher_background)
-                .setContentTitle("Covishield Found")
-                .setContentText("Covishield Found")
+                .setContentTitle(center.name)
+                .setContentText(center.name + center.address)
                 .setStyle(
                         NotificationCompat.BigTextStyle()
-                                .bigText("Covishield Found")
+                                .bigText(center.pincode.toString())
                 )
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
 
