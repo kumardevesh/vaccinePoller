@@ -12,8 +12,10 @@
         android:gravity="center"
         android:paddingStart="32dp"
         android:paddingEnd="32dp"
-        android:text="It will hit cowin api at an interval of 30secs.
-        Notification will be shown once vaccine is found"
+        android:text="1.It will hit cowin api at an interval of 5secs.
+        \n2.Notification will be shown once vaccine is found.
+        \n3.Keep clearing storage for this app.
+        \4.Keep killing and restarting this app for accurate results."
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

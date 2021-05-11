@@ -28,7 +28,7 @@ class RequestInterceptor : Interceptor {
         if (getAccessToken().isEmpty()) {
             return chain.proceed(chain.request())
         } else {
-            requestBuilder.addHeader("Authorization", getAccessToken()).build()
+            requestBuilder.addHeader("authorization", getAccessToken()).build()
         }
 
         return chain.proceed(requestBuilder.build())

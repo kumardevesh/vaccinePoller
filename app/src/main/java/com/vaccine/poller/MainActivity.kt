@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         apiInterface = ApiClient.getClient(this)?.create(APIInterface::class.java)
-        object : CountDownTimer(100 * 30000, 2000) {
+        object : CountDownTimer(100 * 30000, 5000) {
             override fun onTick(millisUntilFinished: Long) {
                 makeCall()
             }
@@ -59,11 +59,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initiateCall(dateString: String) {
-
         for (areaCode in areaCodeList) {
             val call: Call<CentersResponse>? = apiInterface?.getCenters(
                 areaCode, dateString,
-                "COVISHIELD"
+                "COVAXIN"
             )
             call?.enqueue(object : Callback<CentersResponse?> {
                 override fun onFailure(call: Call<CentersResponse?>?, t: Throwable?) {
@@ -114,14 +113,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showNotification(center: Center, sessionCapacity:Int) {
+    fun showNotification(center: Center, sessionCapacity: Int) {
         var builder = NotificationCompat.Builder(this, "COVISHIELD")
             .setSmallIcon(R.drawable.ic_launcher_background)
             .setContentTitle(center.name)
             .setContentText(center.name + center.address)
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText(center.pincode.toString()+"capacity"+sessionCapacity)
+                    .bigText(center.pincode.toString() + "capacity" + sessionCapacity)
             )
             .setPriority(NotificationCompat.PRIORITY_HIGH)
 
