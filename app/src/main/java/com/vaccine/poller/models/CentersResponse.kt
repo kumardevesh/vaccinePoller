@@ -26,6 +26,8 @@ data class Session(
     val capacity: Int,
     @SerializedName("min_age_limit")
     val minAge: Int,
+    @SerializedName("date")
+    val date: String,
     @SerializedName("slots")
     val slots: ArrayList<String>
 )

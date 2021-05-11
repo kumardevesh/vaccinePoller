@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         apiInterface = ApiClient.getClient(this)?.create(APIInterface::class.java)
-        object : CountDownTimer(100 * 30000, 30000) {
+        object : CountDownTimer(100 * 30000, 2000) {
             override fun onTick(millisUntilFinished: Long) {
                 makeCall()
             }
@@ -61,8 +62,8 @@ class MainActivity : AppCompatActivity() {
 
         for (areaCode in areaCodeList) {
             val call: Call<CentersResponse>? = apiInterface?.getCenters(
-                    areaCode, dateString,
-                    "COVISHIELD"
+                areaCode, dateString,
+                "COVISHIELD"
             )
             call?.enqueue(object : Callback<CentersResponse?> {
                 override fun onFailure(call: Call<CentersResponse?>?, t: Throwable?) {
@@ -70,17 +71,23 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onResponse(
-                        call: Call<CentersResponse?>?,
-                        response: Response<CentersResponse?>?
+                    call: Call<CentersResponse?>?,
+                    response: Response<CentersResponse?>?
                 ) {
                     val centers = response?.body()?.centers
                     centers?.let {
                         for (center: Center in centers) {
                             for (session: Session in center.sessions) {
                                 if (session.capacity > 0 &&
-                                        session.slots.isNullOrEmpty().not() &&
-                                        session.minAge == 18) {
-                                    showNotification(center, areaCode)
+                                    session.slots.isNullOrEmpty().not() &&
+                                    session.minAge == 18
+                                ) {
+                                    Log.d(
+                                        "devesh", "" +
+                                                " center capacity" + session.capacity +
+                                                " pincode" + center.pincode
+                                    )
+                                    showNotification(center, session.capacity)
                                 }
                             }
                         }
@@ -102,21 +109,21 @@ class MainActivity : AppCompatActivity() {
             }
             // Register the channel with the system
             val notificationManager: NotificationManager =
-                    getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
 
-    fun showNotification(center: Center, areaCode: Int) {
+    fun showNotification(center: Center, sessionCapacity:Int) {
         var builder = NotificationCompat.Builder(this, "COVISHIELD")
-                .setSmallIcon(R.drawable.ic_launcher_background)
-                .setContentTitle(center.name)
-                .setContentText(center.name + center.address)
-                .setStyle(
-                        NotificationCompat.BigTextStyle()
-                                .bigText(center.pincode.toString())
-                )
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setContentTitle(center.name)
+            .setContentText(center.name + center.address)
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(center.pincode.toString()+"capacity"+sessionCapacity)
+            )
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
 
 
         with(NotificationManagerCompat.from(this)) {
