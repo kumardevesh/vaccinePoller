@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         for (areaCode in areaCodeList) {
             val call: Call<CentersResponse>? = apiInterface?.getCenters(
                 areaCode, dateString,
-                "COVAXIN"
+                "COVISHIELD"
             )
             call?.enqueue(object : Callback<CentersResponse?> {
                 override fun onFailure(call: Call<CentersResponse?>?, t: Throwable?) {
