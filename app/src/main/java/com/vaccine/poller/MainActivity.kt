@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         var dt = Date()
         var c = Calendar.getInstance()
         c.time = dt
-        c.add(Calendar.DATE, 1)
+//        c.add(Calendar.DATE, 1)
         dt = c.time
         var dateString = formatter.format(dt)
         initiateCall(dateString)
@@ -61,8 +61,7 @@ class MainActivity : AppCompatActivity() {
     private fun initiateCall(dateString: String) {
         for (areaCode in areaCodeList) {
             val call: Call<CentersResponse>? = apiInterface?.getCenters(
-                areaCode, dateString,
-                "COVISHIELD"
+                areaCode, dateString
             )
             call?.enqueue(object : Callback<CentersResponse?> {
                 override fun onFailure(call: Call<CentersResponse?>?, t: Throwable?) {

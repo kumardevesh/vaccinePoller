@@ -8,8 +8,7 @@ interface APIInterface {
     @GET("/api/v2/appointment/sessions/calendarByDistrict")
     fun getCenters(
         @Query("district_id") districtId: Int,
-        @Query("date") date: String,
-        @Query("vaccine") vaccine: String
+        @Query("date") date: String
     ): Call<CentersResponse>
 
 }
